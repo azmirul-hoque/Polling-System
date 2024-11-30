@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create a Poll</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background-color: ghostwhite;
+      }
+      form {
+        max-width: 500px;
+        margin: auto;
+        border: 0.2px solid rgba(86, 84, 84, 0.358);
+        border-radius: 20px;
+        padding: 40px;
+        background-color: rgb(240, 237, 241);
+      }
+      input,
+      button {
+        margin: 5px 0;
+        padding: 10px;
+        width: 100%;
+        border: 0.5px solid rgba(81, 79, 79, 0.255);
+        border-radius: 20px;
+      }
+      .options {
+        display: flex;
+        gap: 5px;
+        align-items: center;
+      }
+      .options input {
+        flex-grow: 1;
+      }
+      .sbmt-btn {
+        background-color: blue;
+        color: white;
+        border: none;
+      }
+      .add-btn {
+        background-color: rgb(138, 206, 36);
+        border: none;
+      }
+      .rm-btn {
+        background-color: rgba(255, 0, 0, 0.174);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Create a Poll</h1>
+    <div>
+      <a href="/"
+        ><img
+          width="50"
+          height="50"
+          src="https://img.icons8.com/ios/50/circled-left-2.png"
+          alt="circled-left-2"
+      /></a>
+    </div>
+    <form id="pollForm">
+      <label for="question">Poll Question:</label>
+      <input
+        type="text"
+        id="question"
+        name="question"
+        placeholder="Enter your poll question"
+        required
+      />
+
+      <div id="optionsContainer">
+        <label>Poll Options:</label>
+        <div class="options">
+          <input
+            type="text"
+            name="options[]"
+            placeholder="Enter option 1"
+            required
+          />
+          <button class="rm-btn" type="button" onclick="removeOption(this)">
+            Remove
+          </button>
+        </div>
+        <div class="options">
+          <input
+            type="text"
+            name="options[]"
+            placeholder="Enter option 2"
+            required
+          />
+          <button class="rm-btn" type="button" onclick="removeOption(this)">
+            Remove
+          </button>
+        </div>
+      </div>
+      <button class="add-btn" type="button" onclick="addOption()">
+        Add Option
+      </button>
+      <button class="sbmt-btn" type="submit">Submit Poll</button>
+    </form>
+
+    <script>
+      // Function to add a new option field
+      function addOption() {
+        const optionsContainer = document.getElementById("optionsContainer");
+        const optionDiv = document.createElement("div");
+        optionDiv.className = "options";
+        optionDiv.innerHTML = `
+        <input type="text" name="options[]" placeholder="Enter option" required>
+        <button class="rm-btn" type="button" onclick="removeOption(this)">Remove</button>
+      `;
+        optionsContainer.appendChild(optionDiv);
+      }
+
+      // Function to remove an option field
+      function removeOption(button) {
+        button.parentElement.remove();
+      }
+
+      // Submit form data
+      document
+        .getElementById("pollForm")
+        .addEventListener("submit", async (event) => {
+          event.preventDefault(); // Prevent form from refreshing the page
+
+          const form = event.target;
+          const formData = new FormData(form);
+
+          // Construct the poll data
+          const pollData = {
+            question: formData.get("question"),
+            options: formData.getAll("options[]"),
+          };
+
+          try {
+            const response = await fetch("/create-poll", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" }, // Set the header for JSON
+              body: JSON.stringify(pollData), // Convert data to JSON string
+            });
+
+            if (response.ok) {
+              const result = await response.json();
+              alert("Poll created successfully!");
+              console.log(result);
+            } else {
+              const error = await response.json();
+              alert(`Error: ${error.error || "Failed to create poll"}`);
+            }
+          } catch (err) {
+            console.error("Error submitting poll:", err);
+            alert("An unexpected error occurred");
+          }
+        });
+    </script>
+  </body>
+</html>

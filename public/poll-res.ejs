@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Poll Display</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        background-color: ghostwhite;
+      }
+      .poll-container {
+        max-width: 600px;
+        margin: auto;
+        padding: 20px;
+        border-radius: 5px;
+      }
+      .poll-question-container {
+        background-color: #ded7e0;
+        padding: 20px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+      }
+      .poll-question {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+      .poll-options {
+        list-style: none;
+        padding: 0;
+      }
+      .poll-options li {
+        margin: 10px 0;
+        padding: 10px;
+        background: #c3ffab;
+        border: 1px solid #d7fcb3;
+        border-radius: 5px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .poll-options li:hover {
+        background-color: #c3ffab;
+        transition: background-color 0.3s ease-in-out;
+      }
+      .poll-options button {
+        padding: 5px 10px;
+        font-size: 14px;
+        border: none;
+        background: #48ff00;
+        color: white;
+        border-radius: 3px;
+        cursor: pointer;
+      }
+      .poll-options button:hover {
+        background: #48ff00;
+      }
+      .head-cnt {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+      }
+      .label-cnt {
+        width: 100%;
+        background-color: #009e2a;
+        padding: 10px;
+      }
+      .label-poll-sys {
+        font-size: 40px;
+        font-weight: 500;
+        font-family: Arial, Helvetica, sans-serif;
+        padding: 10px;
+      }
+      .create-poll-btn {
+        width: fit-content;
+        padding: 10px 20px;
+        background-color: #12d246;
+        border-radius: 20px;
+      }
+      .btn-cnt {
+        width: 70%;
+        margin-top: 10px;
+        display: flex;
+        justify-content: right;
+      }
+      a {
+        text-decoration: none;
+        color: black;
+      }
+    </style>
+  </head>
+  <body>
+    <section class="head-cnt">
+      <div class="label-cnt">
+        <span class="label-poll-sys">Polling System</span>
+      </div>
+      <div class="btn-cnt">
+        <div class="create-poll-btn">
+          <a href="/create-poll"
+            >Create Poll
+            <img
+              width="50"
+              height="50"
+              src="https://img.icons8.com/ios-filled/50/plus.png"
+              alt="plus"
+          /></a>
+        </div>
+      </div>
+    </section>
+
+    <div class="poll-container" id="poll-container">
+      <!-- Polls will be dynamically loaded here -->
+    </div>
+
+    <script>
+      async function fetchPollData() {
+        try {
+          const response = await fetch("http://localhost:5000/poll/results");
+          if (!response.ok) throw new Error("Failed to fetch poll data");
+
+          const polls = await response.json();
+
+          const pollContainer = document.getElementById("poll-container");
+          pollContainer.innerHTML = ""; // Clear any existing data
+
+          polls.forEach((poll) => {
+            // Create container for each poll
+            const pollDiv = document.createElement("div");
+            pollDiv.className = "poll-question-container";
+
+            // Add the poll question
+            const questionDiv = document.createElement("div");
+            questionDiv.className = "poll-question";
+            questionDiv.textContent = poll.question;
+            pollDiv.appendChild(questionDiv);
+
+            // Create a list for options
+            const optionsList = document.createElement("ul");
+            optionsList.className = "poll-options";
+
+            // Add each option to the list
+            poll.options.forEach((option) => {
+              const optionItem = document.createElement("li");
+
+              optionItem.innerHTML = `
+              <span>${option.name} (Votes: ${option.percentage}%)</span>
+              <button onclick="vote('${option.optionId}', '${poll.pollId}')" >Vote</button>
+            `;
+              optionsList.appendChild(optionItem);
+            });
+
+            pollDiv.appendChild(optionsList);
+            pollContainer.appendChild(pollDiv);
+          });
+        } catch (error) {
+          console.error("Error fetching poll data:", error);
+          document.getElementById("poll-container").innerHTML =
+            "<p>Error loading poll data.</p>";
+        }
+      }
+
+      async function vote(optionId, pollId) {
+        console.log("Submitted: ", optionId, pollId);
+        try {
+          const response = await fetch(
+            `http://localhost:5000/poll/option-selected?sid=${encodeURIComponent(
+              optionId
+            )}&pid=${encodeURIComponent(pollId)}`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error("Failed to submit your vote");
+          }
+
+          const result = await response.json();
+          console.log("Vote submitted:", result);
+          fetchPollData(); // Refresh data after voting
+        } catch (error) {
+          console.error("Error submitting vote:", error.message);
+        }
+      }
+
+      // Fetch poll data on page load
+      fetchPollData();
+    </script>
+  </body>
+</html>

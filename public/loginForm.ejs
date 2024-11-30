@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #000000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .login-container {
+      background: rgba(26, 28, 26, 0.4);
+      padding: 20px 30px;
+      border: 0.1px solid rgba(195, 199, 195, 0.8);
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      width: 300px;
+      text-align: center;
+    }
+    .login-container h2 {
+      margin-bottom: 20px;
+      color: white;
+    }
+    .login-container input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .login-container button {
+      width: 100%;
+      padding: 10px;
+      background-color: rgba(176, 237, 33, 1);
+      color: black;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .login-container button:hover {
+      background-color: rgba(176, 237, 33, 0.6);
+    }
+    #no-account-cnt {
+      height: 10vh;
+      width: 100%;
+      color: white;
+    }
+    #username,
+    #password {
+      background: rgba(26, 28, 26, 0.7);
+    }
+
+    #no-account-cnt > p > a {
+      color: rgba(176, 237, 33, 1);
+    }
+  </style>
+  <body>
+    <div class="login-container">
+      <h2>Login</h2>
+      <form action="/login" method="post">
+        <input
+          type="text"
+          id="username"
+          name="email"
+          placeholder="Username"
+          required
+        />
+        <input
+          type="password"
+          id="password"
+          name="password"
+          placeholder="Password"
+          required
+        />
+        <button class="sbt-btn" type="submit">Login</button>
+      </form>
+      <div id="no-account-cnt">
+        <p>Don't have account, <a href="/signup">Create account</a></p>
+      </div>
+    </div>
+  </body>
+</html>
