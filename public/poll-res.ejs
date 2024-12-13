@@ -119,7 +119,7 @@
     <script>
       async function fetchPollData() {
         try {
-          const response = await fetch("http://localhost:5000/poll/results");
+          const response = await fetch("https://polling-system-l9b7.onrender.com/poll/results");
           if (!response.ok) throw new Error("Failed to fetch poll data");
 
           const polls = await response.json();
@@ -167,7 +167,7 @@
         console.log("Submitted: ", optionId, pollId);
         try {
           const response = await fetch(
-            `http://localhost:5000/poll/option-selected?sid=${encodeURIComponent(
+            `https://polling-system-l9b7.onrender.com/poll/option-selected?sid=${encodeURIComponent(
               optionId
             )}&pid=${encodeURIComponent(pollId)}`,
             {
